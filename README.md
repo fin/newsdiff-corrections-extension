@@ -1,0 +1,1 @@
+# newsdiff-corrections-extension
