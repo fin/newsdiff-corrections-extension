@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <script src="lodash.js"></script>
+  <script src="sandbox.js"></script>
+  </head>
+  <body>
+    <script id="correction-template" type="text/template">
+      <table>
+        %% _.each(corrections, function(c) { %%
+          <tr>
+            <th>{{c.title}}</th>
+            <td>{{c.text}}</td>
+          </tr>
+        %% }) %%
+      </table>
+    </script>
+  </body>
+</html>
+

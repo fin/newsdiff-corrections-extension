@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+
+  "name": "NewsDiff-Corrections Extension",
+  "description": "This extension saves the news articles you read and informs you if the outlet has issued corrections.",
+  "version": "0.1",
+
+  "background": {
+    "scripts": ["plugin.js"],
+    "persistent": false
+  },
+
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+  "sandbox": {"pages": ["sandbox.html"] },
+  "permissions": [
+    "activeTab",
+    "webNavigation",
+    "notifications",
+    "alarms",
+    "http://newsdiff.p.nomin.at/"
+  ]
+}
