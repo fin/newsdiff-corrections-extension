@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 <html>
   <head>
+  <script src="lib.js"></script>
   <script src="lodash.js"></script>
   <script src="sandbox.js"></script>
   </head>
   <body>
     <script id="correction-template" type="text/template">
-      <table>
-        %% _.each(corrections, function(c) { %%
-          <tr>
-            <th>{{c.title}}</th>
-            <td>{{c.text}}</td>
-          </tr>
-        %% }) %%
-      </table>
+      %% if(TESTMODE) { %%
+        TEST TEST TEST
+      %% } %%
+      <ul>
+      %% _.each(corrections, function(c) { %%
+        <li class="{{c.severity>=50?'important':''}}">
+            <a target="_blank" href="http://{{new URL(BASE_URL).hostname}}{{c.link}}" data-id="{{c.id}}" data-url="{{c.url}}">
+<h4>{{new URL(c.url).hostname.replace(/^www\./,'') }}: {{(c.title || '').slice(0,50)}}{{c.title.length>50?'…':''}}</h4>
+<p>{{c.update}}</p></a>
+        </li>
+      %% }) %%
+      </ul>
     </script>
   </body>
 </html>

@@ -1,0 +1,5 @@
+- show notifications for new changed articles (but only one per article,
+  unless severity goes up)
+- make options page work
+- send stats to server if enabled in options
+

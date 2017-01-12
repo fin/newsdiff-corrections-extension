@@ -2,11 +2,66 @@
 <html>
   <head>
     <title>Newsdiff-Corrections</title>
+    <script src="lib.js"></script>
     <script src="popup.js"></script>
+    <style>
+      ul {
+        margin: 0;
+        padding: 0;
+      }
+      a {
+        color: inherit;
+        text-decoration: inherit;
+      }
+      ul li {
+        background: wien;
+        list-style-type: none;
+        padding: 1px 3px;
+      }
+      ul li:nth-child(2n) {
+        background: rgb(235,235,235);
+      }
+
+      footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 0px 5px;
+        height: 21px;
+        border-top: 1px solid grey;
+        background: #f7f7f7;
+        text-align: center;
+        vertical-align: middle;
+      }
+
+      footer a {
+        text-decoration: none;
+      }
+
+      body {
+        margin-bottom: 26px;
+      }
+
+      h4,p {
+        margin: 0;
+        font-weight: normal;
+      }
+      p {
+        font-size: 0.9em;
+      }
+      li.important h4 {
+        font-weight: bold
+      }
+    </style>
   </head>
-  <body>
+  <body style="min-width: 250px;">
     <iframe src="sandbox.html" id="sandbox" style="display: none;"></iframe>
     <div id="correction_list">
     </div>
+    <footer>
+      <button id="markread">Discard all Notifications</button>
+      <a style="padding-left: 20px;" href="options.html" target="_blank">&#9881;</a>
+    </footer>
   </body>
 </html>

@@ -6,7 +6,7 @@
   "version": "0.1",
 
   "background": {
-    "scripts": ["plugin.js"],
+    "scripts": ["lib.js", "plugin.js"],
     "persistent": false
   },
 
@@ -14,7 +14,11 @@
     "default_icon": "icon.png",
     "default_popup": "popup.html"
   },
+
   "sandbox": {"pages": ["sandbox.html"] },
+
+  "options_page": "options.html",
+
   "permissions": [
     "activeTab",
     "webNavigation",
