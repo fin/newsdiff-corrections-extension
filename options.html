@@ -2,6 +2,11 @@
 <head>
 <title>Options: NewsDiff Corrections</title>
 <style>
+body {
+  max-width: 650px;
+  margin-left: auto;
+  margin-right: auto;
+}
 .col {
   width: 22%;
   display: inline-block;
@@ -9,9 +14,11 @@
   vertical-align: top;
 }
 </style>
+<script src="options.js"></script>
 </head>
 <body>
 <div>
+  <h3>Notification Severity</h3>
   <div class="col">
     <input type="radio" name="notification_severity" id="notification_severity_0" value="0" /><br />
     <label for="notification_severity_0">All</label>
@@ -21,12 +28,31 @@
     <label for="notification_severity_10">Zumindest minimale Änderungen</label>
   </div>
   <div class="col">
-    <input type="radio" name="notification_severity" id="notification_severity_25" value="25" /><br />
-    <label for="notification_severity_25">Zumindest der halbe Artikel wurde geändert</label>
+    <input type="radio" name="notification_severity" id="notification_severity_50" value="50" /><br />
+    <label for="notification_severity_50">Zumindest der halbe Artikel wurde geändert</label>
   </div>
   <div class="col">
     <input type="radio" name="notification_severity" id="notification_severity_99" value="99" /><br />
     <label for="notification_severity_99">Explizite Update- oder Erratum-Hinweise</label>
+  </div>
+</div>
+<div>
+  <h3>Display Severity</h3>
+  <div class="col">
+    <input type="radio" name="display_severity" id="display_severity_0" value="0" /><br />
+    <label for="display_severity_0">All</label>
+  </div>
+  <div class="col">
+    <input type="radio" name="display_severity" id="display_severity_10" value="10" /><br />
+    <label for="display_severity_10">Zumindest minimale Änderungen</label>
+  </div>
+  <div class="col">
+    <input type="radio" name="display_severity" id="display_severity_50" value="50" /><br />
+    <label for="display_severity_50">Zumindest der halbe Artikel wurde geändert</label>
+  </div>
+  <div class="col">
+    <input type="radio" name="display_severity" id="display_severity_99" value="99" /><br />
+    <label for="display_severity_99">Explizite Update- oder Erratum-Hinweise</label>
   </div>
 </div>
 <label for="send_stats">Send Statistics for fin's trial</label><input id="send_stats" type="checkbox" /><br />

@@ -12,8 +12,7 @@ localStorage['newsdiff-settings'] = localStorage['newsdiff-settings'] || JSON.st
    notification_severity: 50,
    display_severity: 0,
    display_all: false,
-   send_stats: true,
-   send_logs: true,
+   send_stats: false,
    unique_id: Math.round(Math.random()*1000)
 });
 
@@ -37,8 +36,39 @@ function received_sites(evt) {
   localStorage['newsdiff-sites'] = this.responseText;
 }
 
+function showNotification(diff) {
+  console.log('show notification', diff);
+  chrome.notifications.create('notification-'+diff.id, {
+    type: 'basic',
+    iconUrl: 'icon.png',
+    title: diff.update,
+    message: new URL(diff.url).hostname+': '+diff.title,
+    buttons: [{title: 'Unterschiede ansehen'},
+              {title: 'Nicht mehr anzeigen'}
+    ]
+  });
+}
+
 function handle_new_diffs(new_diffs) {
-  //console.log('AAAAAAAAAAAAAH', new_diffs);
+  var settings = JSON.parse(localStorage['newsdiff-settings']);
+  var visits = JSON.parse(localStorage['newsdiff-visits']).map(function(x) {
+    x.date = new Date(x.timestamp);
+    return x;
+  });
+  new_diffs.filter(function(x) {
+    return settings.notification_severity <= x.severity;
+  }).filter(function(x) {
+    x.time_ = new Date(x.time);
+    var matching_vs = visits.filter(function(y) {
+      return url_modify(y.url)==url_modify(x.url) &&
+            x.time_ > y.date;
+    });
+    return matching_vs.length>0 &&
+      matching_vs.filter(function(y) {
+    }).length>0;
+  }).map(function(x) {
+    showNotification(x);
+  });
 }
 
 function received_diffs(ymd) {
@@ -56,7 +86,7 @@ function received_diffs(ymd) {
   localStorage['newsdiff-diffs'] = JSON.stringify(newdiffs);
 
   handle_new_diffs(new_diffs.filter(function(x) {
-    return current_diffs.indexOf(x)<0;
+    return current_diffs.map(function(x) { return x.id; }).indexOf(x.id)<0;
   }));
 }
 
@@ -108,4 +138,21 @@ chrome.webNavigation.onCommitted.addListener(onNavigate);
 
 chrome.alarms.create("newshelper-refresh", {periodInMinutes: 20})
 chrome.alarms.onAlarm.addListener(onAlarm);
+
+
+chrome.notifications.onButtonClicked.addListener(
+  function(notificationId,buttonId) {
+    var diffs = [].concat.apply([], Object.values(JSON.parse(localStorage['newsdiff-diffs'])));
+    var diff = diffs.filter(function(x) {
+      return x.id == notificationId.split('-')[1];
+    })[0];
+    if(buttonId == 0) {
+      chrome.tabs.create({url: 'http://'+new URL(BASE_URL()).hostname+diff.link});
+      markAsRead(diff.url);
+    } else {
+      markAsRead(diff.url);
+    }
+    chrome.notifications.clear(notificationId);
+  }
+);
 
