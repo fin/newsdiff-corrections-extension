@@ -1,8 +1,12 @@
-BASE_URL = function() {
+SERVER_URL = function() {
   if(JSON.parse(localStorage['newsdiff-TESTMODE'])) {
-  return 'http://localhost:8000/errata/';
+    return 'http://localhost:8000';
   }
-  return 'http://newsdiff.p.nomin.at/errata/';
+  return 'http://newsdiff.p.nomin.at';
+}
+
+BASE_URL = function() {
+  return SERVER_URL() + '/errata/'
 }
 
 var url_modify = function(url) {
@@ -16,15 +20,27 @@ var groupBy = function(xs, key) {
     }, {});
 };
 
-function getDiffs() {
-  var newsdiff_visits = JSON.parse(localStorage['newsdiff-visits']).map(function(x) {
-    x['url'] = url_modify(x['url']);
+function filterVisitedDiffs(new_diffs) {
+  var visits = JSON.parse(localStorage['newsdiff-visits']).map(function(x) {
     x.date = new Date(x.timestamp);
     return x;
   });
+  var visited_diffs = new_diffs.filter(function(x) {
+    x.time_ = new Date(x.time);
+    var matching_vs = visits.filter(function(y) {
+      return url_modify(y.url)==url_modify(x.url) &&
+            x.time_ > y.date;
+    });
+    return matching_vs.length>0;
+  });
+  return visited_diffs;
+}
 
+function getDiffs() {
   var d = JSON.parse(localStorage['newsdiff-diffs']);
-  var diffs = Object.keys(d).map(function(x) { return d[x]; }).reduce(function(x,y) {
+  var settings = JSON.parse(localStorage['newsdiff-settings']);
+  var diffs = Object.keys(d).map(function(x) { return d[x];
+  }).reduce(function(x,y) {
     return x.concat(y);
   }, []).sort(function(x,y) {
     if(x.time<y.time) {
@@ -38,21 +54,12 @@ function getDiffs() {
 
   var diffs_seen = JSON.parse(localStorage['newsdiff-diffs-seen']);
 
+  diffs = filterVisitedDiffs(diffs);
+
   diffs = diffs.filter(function(x) {
           return x.id && diffs_seen.indexOf(x.id)<0;
         }).filter(function(x) {
           return x.severity>=settings.display_severity;
-        }).filter(function(x) {
-          if(settings.display_all) {
-            console.log('display_all override');
-            return true;
-          }
-
-          x.time_ = new Date(x.time);
-          v = newsdiff_visits.filter(function(v) {
-            return x.time_ > v.date && v.url==url_modify(x.url);
-          });
-          return v.length>0;
         });
   return diffs;
 };

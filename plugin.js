@@ -7,6 +7,9 @@ localStorage['newsdiff-TESTMODE'] = localStorage['newsdiff-TESTMODE'] || 'false'
 
 localStorage['newsdiff-diffs-seen'] = localStorage['newsdiff-diffs-seen'] || '{}';
 
+localStorage['newsdiff-log'] = localStorage['newsdiff-log'] || '[]';
+localStorage['newsdiff-last-log-timestamp'] = localStorage['newsdiff-last-log-timestamp'] || '';
+
 
 localStorage['newsdiff-settings'] = localStorage['newsdiff-settings'] || JSON.stringify({
    notification_severity: 50,
@@ -25,6 +28,16 @@ function request(url, callback) {
   sitesReq.send();
   return sitesReq;
 }
+function post_request(url, data) {
+  var d = new FormData();
+  Object.keys(data).map(function(k) {
+    var v = data[k];
+    d.append(k,v);
+  });
+  var sitesReq = new XMLHttpRequest();
+  sitesReq.open('POST', url , true);
+  sitesReq.send(d);
+}
 
 function parse_url(url) {
   var el = document.createElement('a');
@@ -37,7 +50,7 @@ function received_sites(evt) {
 }
 
 function showNotification(diff) {
-  console.log('show notification', diff);
+  log('notification_shown', 1);
   chrome.notifications.create('notification-'+diff.id, {
     type: 'basic',
     iconUrl: 'icon.png',
@@ -49,23 +62,46 @@ function showNotification(diff) {
   });
 }
 
-function handle_new_diffs(new_diffs) {
-  var settings = JSON.parse(localStorage['newsdiff-settings']);
-  var visits = JSON.parse(localStorage['newsdiff-visits']).map(function(x) {
-    x.date = new Date(x.timestamp);
-    return x;
+function log(category, number, context) {
+  var l = JSON.parse(localStorage['newsdiff-log']);
+  var entry = {'time': new Date().toISOString(), 'category': category, 'number': number, 'context': context}
+  console.log('logging', entry);
+  l.push(entry);
+  localStorage['newsdiff-log'] = JSON.stringify(l);
+}
+
+function summarize_log() {
+  var l = JSON.parse(localStorage['newsdiff-log']);
+  var by_c = groupBy(l, 'category')
+
+  console.log(by_c);
+  var r = {};
+  Object.keys(by_c).map(function(k) {
+    var x = by_c[k];
+    r[k] = x.reduce(function(y,z) {
+      return y+z.number;
+    }, 0);
   });
-  new_diffs.filter(function(x) {
+  return r;
+}
+
+function handle_new_diffs(new_diffs) {
+  if(new_diffs.length==0) {
+    return;
+  }
+  console.log('new_diffs: ', new_diffs.length)
+  var settings = JSON.parse(localStorage['newsdiff-settings']);
+  var visited_diffs = filterVisitedDiffs(new_diffs);
+  if(visited_diffs.length>0) {
+    log('new_diffs', new_diffs.length);
+  }
+  visited_diffs.filter(function(x) {
+    return settings.display_severity <= x.severity;
+  }).map(function(x) {
+    log('new_diffs_could_be_displayed', 1, x);
+  });
+  visited_diffs.filter(function(x) {
     return settings.notification_severity <= x.severity;
-  }).filter(function(x) {
-    x.time_ = new Date(x.time);
-    var matching_vs = visits.filter(function(y) {
-      return url_modify(y.url)==url_modify(x.url) &&
-            x.time_ > y.date;
-    });
-    return matching_vs.length>0 &&
-      matching_vs.filter(function(y) {
-    }).length>0;
   }).map(function(x) {
     showNotification(x);
   });
@@ -106,7 +142,30 @@ function log_visit(obj) {
   localStorage['newsdiff-visits'] = JSON.stringify(cur);
 }
 
-function onAlarm() {
+function send_stats_now() {
+  if(!JSON.parse(localStorage['newsdiff-settings']).send_stats) {
+    return;
+  }
+  var settings = JSON.parse(localStorage['newsdiff-settings']);
+
+  console.log('would post here');
+  var cur_date = new Date().toISOString();
+
+  post_request(SERVER_URL()+'/stats/insert/', {
+    'data': JSON.stringify(summarize_log()),
+    'identifier': settings.unique_id,
+    'last_date': localStorage['newsdiff-last-log-timestamp'],
+    'cur_date': cur_date,
+  });
+  localStorage['newsdiff-last-log-timestamp'] = cur_date;
+  localStorage['newsdiff-log'] = '[]';
+}
+
+function onAlarm(alarm) {
+  if(alarm && alarm.name=='logsubmit') {
+    send_stats_now();
+    return;
+  }
   console.log('init/alarm received');
   request(BASE_URL()+'sites.json', received_sites);
 
@@ -137,6 +196,7 @@ chrome.runtime.onInstalled.addListener(onInit);
 chrome.webNavigation.onCommitted.addListener(onNavigate);
 
 chrome.alarms.create("newshelper-refresh", {periodInMinutes: 20})
+chrome.alarms.create("logsubmit", {periodInMinutes: 1440})
 chrome.alarms.onAlarm.addListener(onAlarm);
 
 

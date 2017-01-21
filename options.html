@@ -17,6 +17,7 @@ body {
 <script src="options.js"></script>
 </head>
 <body>
+<h1>Settings for NewsDiff-Corrections Extension</h1>
 <div>
   <h3>Notification Severity</h3>
   <div class="col">
@@ -25,15 +26,15 @@ body {
   </div>
   <div class="col">
     <input type="radio" name="notification_severity" id="notification_severity_10" value="10" /><br />
-    <label for="notification_severity_10">Zumindest minimale Änderungen</label>
+    <label for="notification_severity_10">At least slight changes were made</label>
   </div>
   <div class="col">
     <input type="radio" name="notification_severity" id="notification_severity_50" value="50" /><br />
-    <label for="notification_severity_50">Zumindest der halbe Artikel wurde geändert</label>
+    <label for="notification_severity_50">At least half the article was modified</label>
   </div>
   <div class="col">
     <input type="radio" name="notification_severity" id="notification_severity_99" value="99" /><br />
-    <label for="notification_severity_99">Explizite Update- oder Erratum-Hinweise</label>
+    <label for="notification_severity_99">Explicitly labeled Update or Correction</label>
   </div>
 </div>
 <div>
@@ -44,18 +45,20 @@ body {
   </div>
   <div class="col">
     <input type="radio" name="display_severity" id="display_severity_10" value="10" /><br />
-    <label for="display_severity_10">Zumindest minimale Änderungen</label>
+    <label for="display_severity_10">At least slight changes were made</label>
   </div>
   <div class="col">
     <input type="radio" name="display_severity" id="display_severity_50" value="50" /><br />
-    <label for="display_severity_50">Zumindest der halbe Artikel wurde geändert</label>
+    <label for="display_severity_50">At least half the article was modified</label>
   </div>
   <div class="col">
     <input type="radio" name="display_severity" id="display_severity_99" value="99" /><br />
-    <label for="display_severity_99">Explizite Update- oder Erratum-Hinweise</label>
+    <label for="display_severity_99">Explicitly labeled Update or Correction</label>
   </div>
 </div>
 <label for="send_stats">Send Statistics for fin's trial</label><input id="send_stats" type="checkbox" /><br />
 <label for="name">User Name / Unique Identifier (for fin's trial)</label><input id="name" type="text" /><br />
+<br />
+<small>Changes are auto-saved, no worries</small>
 </body>
 </html>
