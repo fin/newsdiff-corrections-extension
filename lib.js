@@ -36,7 +36,7 @@ function filterVisitedDiffs(new_diffs) {
   return visited_diffs;
 }
 
-function getDiffs() {
+function getDiffs_basic() {
   var d = JSON.parse(localStorage['newsdiff-diffs']);
   var settings = JSON.parse(localStorage['newsdiff-settings']);
   var diffs = Object.keys(d).map(function(x) { return d[x];
@@ -52,17 +52,24 @@ function getDiffs() {
     return 0;
   }).reverse();
 
-  var diffs_seen = JSON.parse(localStorage['newsdiff-diffs-seen']);
 
-  diffs = filterVisitedDiffs(diffs);
+  var diffs_seen = JSON.parse(localStorage['newsdiff-diffs-seen']);
+  diffs = filterVisitedDiffs(diffs).filter(function(x) {
+          return x.id && diffs_seen.indexOf(x.id)<0;
+        });
+
+  return diffs;
+}
+
+function getDiffs() {
+  var diffs = getDiffs_basic();
 
   diffs = diffs.filter(function(x) {
-          return x.id && diffs_seen.indexOf(x.id)<0;
-        }).filter(function(x) {
           return x.severity>=settings.display_severity;
         });
   return diffs;
 };
+
 
 function markAsRead(url) {
     var nds = JSON.parse(localStorage['newsdiff-diffs-seen'])
@@ -77,4 +84,15 @@ function markAsRead(url) {
       nds = nds.slice(nds.length-300,nds.length);
     }
     localStorage['newsdiff-diffs-seen'] = JSON.stringify(nds);
+}
+
+function log(category, number, context) {
+  if(!JSON.parse(localStorage['newsdiff-settings']).send_stats) {
+    return;
+  }
+  var l = JSON.parse(localStorage['newsdiff-log']);
+  var entry = {'time': new Date().toISOString(), 'category': category, 'number': number, 'context': context}
+  console.log('logging', entry);
+  l.push(entry);
+  localStorage['newsdiff-log'] = JSON.stringify(l);
 }

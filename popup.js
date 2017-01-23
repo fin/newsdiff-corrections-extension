@@ -25,13 +25,13 @@ document.addEventListener('DOMContentLoaded', function() {
   setTimeout(sendMessage,1000);
   document.querySelector('button#markread').addEventListener('click', function() {
     var read = JSON.parse(localStorage['newsdiff-diffs-seen']);
-    var diffs = JSON.parse(localStorage['newsdiff-diffs']);
-    Object.keys(diffs).map(function(k) {
-      diffs[k].map(function(y) {
-        read.push(y.id);
-      });
+    var tobemarked = getDiffs_basic();
+    tobemarked.map(function(x) {
+      read.push(x.id);
     });
     localStorage['newsdiff-diffs-seen'] = JSON.stringify(read)
+    log('discarded in popup', tobemarked.length);
+    window.close();
   });
 });
 

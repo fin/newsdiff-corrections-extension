@@ -8,7 +8,7 @@ localStorage['newsdiff-TESTMODE'] = localStorage['newsdiff-TESTMODE'] || 'false'
 localStorage['newsdiff-diffs-seen'] = localStorage['newsdiff-diffs-seen'] || '{}';
 
 localStorage['newsdiff-log'] = localStorage['newsdiff-log'] || '[]';
-localStorage['newsdiff-last-log-timestamp'] = localStorage['newsdiff-last-log-timestamp'] || '';
+localStorage['newsdiff-last-log-timestamp'] = localStorage['newsdiff-last-log-timestamp'] || new Date().toISOString();
 
 
 localStorage['newsdiff-settings'] = localStorage['newsdiff-settings'] || JSON.stringify({
@@ -28,13 +28,16 @@ function request(url, callback) {
   sitesReq.send();
   return sitesReq;
 }
-function post_request(url, data) {
+function post_request(url, data, callback) {
   var d = new FormData();
   Object.keys(data).map(function(k) {
     var v = data[k];
     d.append(k,v);
   });
   var sitesReq = new XMLHttpRequest();
+  if(callback) {
+    sitesReq.addEventListener('load', callback);
+  }
   sitesReq.open('POST', url , true);
   sitesReq.send(d);
 }
@@ -60,14 +63,6 @@ function showNotification(diff) {
               {title: 'Nicht mehr anzeigen'}
     ]
   });
-}
-
-function log(category, number, context) {
-  var l = JSON.parse(localStorage['newsdiff-log']);
-  var entry = {'time': new Date().toISOString(), 'category': category, 'number': number, 'context': context}
-  console.log('logging', entry);
-  l.push(entry);
-  localStorage['newsdiff-log'] = JSON.stringify(l);
 }
 
 function summarize_log() {
@@ -108,7 +103,7 @@ function handle_new_diffs(new_diffs) {
 }
 
 function received_diffs(ymd) {
-  if(this.status!=200) {
+  if(this.status!=200 || this.responseText.length==0) {
     return;
   }
   var new_diffs = JSON.parse(this.responseText);
@@ -140,6 +135,7 @@ function log_visit(obj) {
     cur = cur.slice(cur.length-300,cur.length);
   }
   localStorage['newsdiff-visits'] = JSON.stringify(cur);
+  log('news site url visited', 1);
 }
 
 function send_stats_now() {
@@ -148,7 +144,6 @@ function send_stats_now() {
   }
   var settings = JSON.parse(localStorage['newsdiff-settings']);
 
-  console.log('would post here');
   var cur_date = new Date().toISOString();
 
   post_request(SERVER_URL()+'/stats/insert/', {
@@ -156,16 +151,23 @@ function send_stats_now() {
     'identifier': settings.unique_id,
     'last_date': localStorage['newsdiff-last-log-timestamp'],
     'cur_date': cur_date,
+  }, function(evt) {
+    localStorage['newsdiff-last-log-timestamp'] = cur_date;
+    localStorage['newsdiff-log'] = '[]';
   });
-  localStorage['newsdiff-last-log-timestamp'] = cur_date;
-  localStorage['newsdiff-log'] = '[]';
+}
+
+function logsubmit_iftime() {
+  var last = new Date(localStorage['newsdiff-last-log-timestamp']);
+  var cur = new Date()
+  var diff = cur - last;
+  if(diff > 1000*60*60*24) {
+    send_stats_now();
+  }
 }
 
 function onAlarm(alarm) {
-  if(alarm && alarm.name=='logsubmit') {
-    send_stats_now();
-    return;
-  }
+  logsubmit_iftime();
   console.log('init/alarm received');
   request(BASE_URL()+'sites.json', received_sites);
 
@@ -196,7 +198,7 @@ chrome.runtime.onInstalled.addListener(onInit);
 chrome.webNavigation.onCommitted.addListener(onNavigate);
 
 chrome.alarms.create("newshelper-refresh", {periodInMinutes: 20})
-chrome.alarms.create("logsubmit", {periodInMinutes: 1440})
+//chrome.alarms.create("logsubmit", {periodInMinutes: 1440})
 chrome.alarms.onAlarm.addListener(onAlarm);
 
 
@@ -207,9 +209,11 @@ chrome.notifications.onButtonClicked.addListener(
       return x.id == notificationId.split('-')[1];
     })[0];
     if(buttonId == 0) {
+      log('notification opened details', 1);
       chrome.tabs.create({url: 'http://'+new URL(BASE_URL()).hostname+diff.link});
       markAsRead(diff.url);
     } else {
+      log('notification marked as read', 1);
       markAsRead(diff.url);
     }
     chrome.notifications.clear(notificationId);
