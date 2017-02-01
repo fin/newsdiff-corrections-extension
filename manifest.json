@@ -2,7 +2,7 @@
   "manifest_version": 2,
 
   "name": "(Austrian) News Correction/Update watcher",
-  "description": "This extension saves the news articles you read and informs you if the outlet has changed their contents or issued corrections. Statu: Early Alpha, only a few austrian news sites currently supported.",
+  "description": "This extension saves the news articles you read and informs you if the outlet has changed their contents or issued corrections.",
   "version": "0.1",
 
   "background": {
