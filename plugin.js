@@ -12,7 +12,7 @@ localStorage['newsdiff-last-log-timestamp'] = localStorage['newsdiff-last-log-ti
 
 
 localStorage['newsdiff-settings'] = localStorage['newsdiff-settings'] || JSON.stringify({
-   notification_severity: 50,
+   notification_severity: 10,
    display_severity: 0,
    display_all: false,
    send_stats: false,
@@ -220,3 +220,9 @@ chrome.notifications.onButtonClicked.addListener(
   }
 );
 
+if (!window.localStorage.getItem('hasSeenIntro')) {
+  window.localStorage.setItem('hasSeenIntro', 'yep');
+  chrome.tabs.create({
+    url: '/options.html'
+  });
+}

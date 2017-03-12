@@ -13,62 +13,93 @@ body {
   text-align: center;
   vertical-align: top;
 }
+.stats_screen {
+  background: lightgreen;
+  padding: 1em;
+  border: 1px solid green;
+  border-radius: 3px;
+  margin-top: 2em;
+}
+label[for="send_stats"] {
+  font-weight: bold;
+}
+.ifparticipate {
+ text-align: center;
+ font-size: 16px;
+ margin: 1em;
+ display: none;
+}
+.participating .ifparticipate {
+  display: block;
+}
 </style>
-<script src="options.js"></script>
 </head>
 <body>
 <h1>Settings for NewsDiff-Corrections Extension</h1>
 <div>
-  <h3>Notification Severity</h3>
+  <p>This extension will track which pieces of news your read on the following websites:</p>
+  <ul id="news_site_list">[Site List not received yet!]</ul>
+  <p>Whenever an article changed after you read it, you will be notified. Changes will also be accessible vial the extension's toolbar button.</p>
+  <p>By default, the extension only saves information about your behavour locally, thus protecting your privacy. Only if you click on a notification, you will browse to a page on a public web server.</p>
+  <h3>When would you like to be notified (via popup) of a correction?</h3>
   <div class="col">
     <input type="radio" name="notification_severity" id="notification_severity_0" value="0" /><br />
-    <label for="notification_severity_0">All</label>
+    <label for="notification_severity_0">Always, even when a tiny typo was corrected</label>
   </div>
   <div class="col">
     <input type="radio" name="notification_severity" id="notification_severity_10" value="10" /><br />
-    <label for="notification_severity_10">At least slight changes were made</label>
+    <label for="notification_severity_10">When at least slight changes were made</label>
   </div>
   <div class="col">
     <input type="radio" name="notification_severity" id="notification_severity_50" value="50" /><br />
-    <label for="notification_severity_50">At least half the article was modified</label>
+    <label for="notification_severity_50">When at least half the article was modified</label>
   </div>
   <div class="col">
     <input type="radio" name="notification_severity" id="notification_severity_99" value="99" /><br />
-    <label for="notification_severity_99">Explicitly labeled Update or Correction</label>
+    <label for="notification_severity_99">When a change was explicitly labeled Update or Correction</label>
   </div>
 </div>
 <div>
-  <h3>Display Severity</h3>
+  <h3>When would you like a correction to show up in the extension's toolbar window?</h3>
   <div class="col">
     <input type="radio" name="display_severity" id="display_severity_0" value="0" /><br />
-    <label for="display_severity_0">All</label>
+    <label for="display_severity_0">Always, even when a tiny typo was corrected</label>
   </div>
   <div class="col">
     <input type="radio" name="display_severity" id="display_severity_10" value="10" /><br />
-    <label for="display_severity_10">At least slight changes were made</label>
+    <label for="display_severity_10">When at least slight changes were made</label>
   </div>
   <div class="col">
     <input type="radio" name="display_severity" id="display_severity_50" value="50" /><br />
-    <label for="display_severity_50">At least half the article was modified</label>
+    <label for="display_severity_50">When at least half the article was modified</label>
   </div>
   <div class="col">
     <input type="radio" name="display_severity" id="display_severity_99" value="99" /><br />
-    <label for="display_severity_99">Explicitly labeled Update or Correction</label>
+    <label for="display_severity_99">When a change was explicitly labeled as Update or Correction</label>
   </div>
 </div>
-<label for="send_stats">Send Statistics for fin's trial</label><input id="send_stats" type="checkbox" /><br />
-<label for="name">User Name / Unique Identifier (for fin's trial)</label><input id="name" type="text" /><br />
-<h2>Stats sent to the server roughly once per day:</h2>
-<ul>
-  <li>Number of urls on the relevant news pages visited</li>
-  <li>Number of changes matching the news pages</li>
-  <li>Number of relevant discarded via the extension popup window (popup opened by clicking the extension toolbar button)</li>
-  <li>Number of change notifications shown</li>
-  <li>Number of notifications shown via the notification</li>
-  <li>Number of notifications marked as read via the notification</li>
-</ul>
-<br />
+
+<div class='stats_screen'>
+  <div style="text-align: center; padding-top: 0px; padding-bottom: 6px; font-size: 16px;">
+    <input id="send_stats" type="checkbox" /> <label for="send_stats">Send Statistics for fin's trial &amp; participate in study</label><br />
+  </div>
+  <strong>By participating in this study, I consent to the following information being logged and submitted to the server once a day:</strong>
+  <ul>
+    <li>Number of URLs visited on the tracked news sites</li>
+    <li>Number of changes that occured after you visited the URLs</li>
+    <li>Number of displayed changes "marked as read"</li>
+    <li>Number of displayed notifications, per hour of day</li>
+    <li>Number of changes visited via the notification, per hour of day</li>
+    <li>Number of notifications marked as read via the notification, per hour of day</li>
+  </ul>
+  <div class="ifparticipate">
+    <a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSfTtHGzQBA0y7IG0Gu2ZS480O8p1fbpCYudBUgwVzXKYIeURA/viewform">If you participate, please fill in this survey!</a>
+  </div>
+  <label for="name">User Name / Unique Identifier: </label><input id="name" type="text" /><small> (You can leave this here, all data will be linked to this ID)</small>
+</div>
+<br /><br /><br /><br />
 <small>Changes are auto-saved, no worries<br />
   Icon cc-by, by <a href="https://thenounproject.com/term/change-space/662433/">Richard Wearn, GB on Nounproject</a></small>
+<script src="options.js"></script>
 </body>
 </html>

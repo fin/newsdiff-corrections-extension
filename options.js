@@ -25,11 +25,32 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   document.querySelector('#send_stats').checked=cur_settings.send_stats;
+  if(cur_settings.send_stats) {
+    document.getElementsByClassName('stats_screen')[0].className+=' participating';
+  }
   document.querySelector('#send_stats').addEventListener('click', function(x) {
     set_setting('send_stats', this.checked);
+    var cc = document.getElementsByClassName('stats_screen')[0];
+    if(this.checked) {
+      cc.className+=' participating';
+      document.getElementsByClassName("ifparticipate")[0].scrollIntoView()
+    } else {
+      cc.className=cc.className.replace(' participating','');
+    }
   });
   document.querySelector('#name').value=cur_settings.unique_id;
-  document.querySelector('#name').addEventListener('click', function(x) {
-    set_setting('send_stats', this.value);
+  document.querySelector('#name').addEventListener('keyup', function(x) {
+    set_setting('unique_id', this.value);
   });
 });
+
+function update_sitelist() {
+  var a = JSON.parse(localStorage['newsdiff-sites']);
+  if(a) {
+    a.sort();
+    document.getElementById('news_site_list').innerHTML='<li>'+a.join('</li><li>')+'</li>';
+  }
+}
+
+setInterval(update_sitelist, 5000);
+update_sitelist();
