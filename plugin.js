@@ -5,7 +5,10 @@ localStorage['newsdiff-diffs'] = localStorage['newsdiff-diffs'] || '{}';
 localStorage['newsdiff-sites'] = localStorage['newsdiff-sites'] || '[]';
 localStorage['newsdiff-TESTMODE'] = localStorage['newsdiff-TESTMODE'] || 'false';
 
-localStorage['newsdiff-diffs-seen'] = localStorage['newsdiff-diffs-seen'] || '{}';
+localStorage['newsdiff-diffs-seen'] = localStorage['newsdiff-diffs-seen'] || '[]';
+if(localStorage['newsdiff-diffs-seen']=='{}') {
+  localStorage['newsdiff-diffs-seen']='[]';
+}
 
 localStorage['newsdiff-log'] = localStorage['newsdiff-log'] || '[]';
 localStorage['newsdiff-last-log-timestamp'] = localStorage['newsdiff-last-log-timestamp'] || new Date().toISOString();
@@ -59,8 +62,8 @@ function showNotification(diff) {
     iconUrl: 'icon.png',
     title: diff.update,
     message: new URL(diff.url).hostname+': '+diff.title,
-    buttons: [{title: 'Unterschiede ansehen'},
-              {title: 'Nicht mehr anzeigen'}
+    buttons: [{title: 'Show Difference'},
+              {title: 'Dismiss'}
     ]
   });
 }
@@ -210,10 +213,14 @@ chrome.notifications.onButtonClicked.addListener(
     })[0];
     if(buttonId == 0) {
       log('notification opened details', 1);
+      log('notification opened details-hour-'+(new Date().getHours()), 1); // by hour
+      log('notification opened details-severity-'+diff.severity, 1); // by hour
       chrome.tabs.create({url: 'http://'+new URL(BASE_URL()).hostname+diff.link});
       markAsRead(diff.url);
     } else {
       log('notification marked as read', 1);
+      log('notification marked as read-hour-'+(new Date().getHours()), 1); // by hour
+      log('notification marked as read-severity-'+diff.severity, 1); // by hour
       markAsRead(diff.url);
     }
     chrome.notifications.clear(notificationId);

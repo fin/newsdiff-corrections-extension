@@ -40,6 +40,14 @@ window.addEventListener('message', function(event) {
   document.getElementById('correction_list').innerHTML = data.html;
   Array.prototype.slice.call(document.querySelectorAll("#correction_list a")).map(function(e) {
     e.addEventListener('click', function(x) {
+      var id = e.getAttribute('data-id');
+      var diffs = [].concat.apply([], Object.values(JSON.parse(localStorage['newsdiff-diffs'])));
+      var diff = diffs.filter(function(x) {
+        return x.id == id;
+      })[0];
+      log('opened from popup', 1);
+      log('opened from popup-hour-'+(new Date().getHours()), 1); // by hour
+      log('opened from popup-severity-'+diff.severity, 1); // by hour
       markAsRead(e.getAttribute('data-url'));
     });
   });
