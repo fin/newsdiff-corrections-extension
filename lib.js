@@ -2,7 +2,7 @@ SERVER_URL = function() {
   if(JSON.parse(localStorage['newsdiff-TESTMODE'])) {
     return 'http://localhost:8000';
   }
-  return 'http://newsdiff.p.nomin.at';
+  return 'https://newsdiff.p.nomin.at';
 }
 
 BASE_URL = function() {
