@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function update_sitelist() {
   var a = JSON.parse(localStorage['newsdiff-sites']);
-  if(a) {
+  if(a && a.length>0) {
     a.sort();
     document.getElementById('news_site_list').innerHTML='<li>'+a.join('</li><li>')+'</li>';
   }

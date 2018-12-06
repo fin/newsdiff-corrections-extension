@@ -1,0 +1,22 @@
+{
+  "name": "newsdiff-corrections-extension",
+  "version": "0.0.5",
+  "description": "",
+  "main": "lib.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile_templates": "npx lodash template=\"*.jsx\" settings=\"{interpolate: /{{([\\s\\S]+?)}}/g, evaluate: /%%([\\s\\S]+?)%%/g}\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fin/newsdiff-corrections-extension.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/fin/newsdiff-corrections-extension/issues"
+  },
+  "homepage": "https://github.com/fin/newsdiff-corrections-extension#readme",
+  "devDependencies": {
+    "lodash-cli": "^4.17.5"
+  }
+}

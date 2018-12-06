@@ -1,12 +1,3 @@
-<!DOCTYPE html>
-<html>
-  <head>
-  <script src="lib.js"></script>
-  <script src="lodash.js"></script>
-  <script src="sandbox.js"></script>
-  </head>
-  <body>
-    <script id="correction-template" type="text/template">
       %% if(TESTMODE) { %%
         TEST TEST TEST
       %% } %%
@@ -19,7 +10,4 @@
         </li>
       %% }) %%
       </ul>
-    </script>
-  </body>
-</html>
 

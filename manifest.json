@@ -3,7 +3,7 @@
 
   "name": "(Austrian) News Correction/Update watcher",
   "description": "This extension saves the news articles you read and informs you if the outlet has changed their contents or issued corrections.",
-  "version": "0.5",
+  "version": "0.6",
 
   "background": {
     "scripts": ["lib.js", "plugin.js"],
@@ -16,12 +16,10 @@
   },
 
   "icons": {
-    "128": "logo.png"
+    "128": "icon.png"
   },
 
-  "sandbox": {"pages": ["sandbox.html"] },
-
-  "options_page": "options.html",
+  "options_ui": {"page": "options.html", "open_in_tab": true},
 
   "permissions": [
     "activeTab",

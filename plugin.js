@@ -57,15 +57,18 @@ function received_sites(evt) {
 
 function showNotification(diff) {
   log('notification_shown', 1);
-  chrome.notifications.create('notification-'+diff.id, {
+  var o = {
     type: 'basic',
     iconUrl: 'icon.png',
     title: diff.update,
-    message: new URL(diff.url).hostname+': '+diff.title,
-    buttons: [{title: 'Show Difference'},
-              {title: 'Dismiss'}
-    ]
-  });
+    message: new URL(diff.url).hostname+': '+diff.title
+  };
+  if(navigator.userAgent.indexOf('Firefox')<0) {
+      o.buttons = [{title: 'Show Difference'},
+                {title: 'Dismiss'}
+      ];
+  }
+  chrome.notifications.create('notification-'+diff.id, o);
 }
 
 function summarize_log() {
@@ -204,7 +207,6 @@ chrome.alarms.create("newshelper-refresh", {periodInMinutes: 20})
 //chrome.alarms.create("logsubmit", {periodInMinutes: 1440})
 chrome.alarms.onAlarm.addListener(onAlarm);
 
-
 chrome.notifications.onButtonClicked.addListener(
   function(notificationId,buttonId) {
     var diffs = [].concat.apply([], Object.values(JSON.parse(localStorage['newsdiff-diffs'])));
@@ -226,6 +228,20 @@ chrome.notifications.onButtonClicked.addListener(
     chrome.notifications.clear(notificationId);
   }
 );
+
+chrome.notifications.onClicked.addListener(function(notificationId) {
+    var diffs = [].concat.apply([], Object.values(JSON.parse(localStorage['newsdiff-diffs'])));
+    var diff = diffs.filter(function(x) {
+      return x.id == notificationId.split('-')[1];
+    })[0];
+    log('notification opened notification details', 1);
+    log('notification opened notification details-hour-'+(new Date().getHours()), 1); // by hour
+    log('notification opened notification details-severity-'+diff.severity, 1); // by hour
+    chrome.tabs.create({url: 'http://'+new URL(BASE_URL()).hostname+diff.link});
+    markAsRead(diff.url);
+    chrome.notifications.clear(notificationId);
+});
+
 
 if (!window.localStorage.getItem('hasSeenIntro')) {
   window.localStorage.setItem('hasSeenIntro', 'yep');
